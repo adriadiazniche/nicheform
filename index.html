@@ -268,14 +268,33 @@ let tokenClient = null;
 /* ── INIT Google Identity ── */
 window.addEventListener('load', () => {
   if (typeof google === 'undefined') return;
+    const savedEmail = localStorage.getItem('nb_google_email');
+  if (savedEmail) {
+    setTimeout(() => {
+      tokenClient && tokenClient.requestAccessToken({ prompt: '', login_hint: savedEmail });
+    }, 500);
+  }
   tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: GOOGLE_CLIENT_ID,
     scope: SCOPES,
+    prompt: '',
     callback: (resp) => {
       if (resp.error) { showAuthStatus('err', '✗ Error de autenticación: ' + resp.error); return; }
       accessToken = resp.access_token;
       document.getElementById('authCard').classList.add('hidden');
-      showAuthStatus('ok', '✓ Conectado con Google. Los registros se guardarán en Google Sheets.');
+      // Renovar token automáticamente 5 min antes de que expire (55 min)
+      clearTimeout(window._tokenTimer);
+      window._tokenTimer = setTimeout(() => {
+        const email = localStorage.getItem('nb_google_email');
+        tokenClient.requestAccessToken({ prompt: '', login_hint: email });
+      }, 55 * 60 * 1000);
+      // Guardar email para futuras sesiones
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: 'Bearer ' + resp.access_token }
+      }).then(r => r.json()).then(info => {
+        localStorage.setItem('nb_google_email', info.email);
+        showAuthStatus('ok', '✓ Conectado como ' + info.email + ' · Sesión activa');
+      });
     }
   });
 });
