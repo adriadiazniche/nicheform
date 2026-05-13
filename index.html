@@ -347,15 +347,19 @@ async function enviar() {
     // 2. Añadir fila a Google Sheets
     showMsg('loading', '⏳ Guardando datos en la hoja de cálculo...');
     const fila = [[fecha, horaEntrada, horaSalida || '—', nombre, depto, motivo, ts, firmaUrl]];
-    await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}!A:H:append?valueInputOption=USER_ENTERED`,
+    const sheetsResp = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}!A1:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
       {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
         body: JSON.stringify({ values: fila })
       }
     );
-
+    const sheetsData = await sheetsResp.json();
+    if (!sheetsResp.ok) {
+      const errMsg = sheetsData.error ? sheetsData.error.message : JSON.stringify(sheetsData);
+      throw new Error('Sheets: ' + errMsg);
+    }
     showMsg('ok', '✓ Visita registrada correctamente en Google Sheets. ¡Gracias!');
     showToast('✓ Registro guardado');
     setTimeout(() => resetForm(), 3000);
