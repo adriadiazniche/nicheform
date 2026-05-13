@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a1a1a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Registro Visitas" />
+  <title>Registro de Visitas · Niche Beauty Lab</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #faf8f4;
+      --cream2: #f2ede4;
+      --cream3: #e8e0d4;
+      --gold: #b8965a;
+      --gold-light: #d4b07a;
+      --ink: #1a1a1a;
+      --ink-mid: #4a4a4a;
+      --ink-light: #8a8a8a;
+      --white: #ffffff;
+      --danger: #8b2020;
+      --danger-bg: #fdf0f0;
+      --success: #1a5c3a;
+      --success-bg: #f0faf4;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { min-height: 100%; background: var(--cream); color: var(--ink); font-family: 'Jost', sans-serif; font-weight: 300; }
+    .shell { max-width: 520px; margin: 0 auto; min-height: 100vh; background: var(--cream); }
+
+    /* HEADER */
+    .header { background: var(--ink); padding: 20px 24px 18px; text-align: center; }
+    .header-logo { margin-bottom: 10px; }
+    .header-logo img { max-height: 56px; max-width: 200px; object-fit: contain; filter: brightness(0) invert(1); }
+    .logo-placeholder { font-family: 'Montserrat', serif; font-size: 20px; font-weight: 600; color: var(--white); letter-spacing: 0.12em; text-transform: uppercase; }
+    .logo-placeholder span { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.22em; color: var(--gold-light); margin-top: 2px; font-family: 'Jost', sans-serif; }
+    .header-address { font-size: 11px; color: var(--ink-light); letter-spacing: 0.05em; line-height: 1.6; margin-top: 8px; }
+
+    /* TÍTULO */
+    .form-title-bar { background: #9d9b97; padding: 11px 24px; text-align: center; }
+    .form-title-bar h1 { font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.18em; color: var(--white); text-transform: uppercase; }
+
+    /* AUTH */
+    .auth-wrap { margin: 18px 18px 0; }
+    .auth-card { background: var(--white); border: 1px solid var(--cream3); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 12px; }
+    .auth-card.hidden { display: none; }
+    .auth-icon { width: 38px; height: 38px; border-radius: 50%; background: #fff3e0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .auth-text { flex: 1; }
+    .auth-text strong { display: block; font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+    .auth-text p { font-size: 12px; color: var(--ink-light); line-height: 1.4; }
+    .btn-google { display: flex; align-items: center; gap: 8px; padding: 9px 14px; background: var(--white); border: 1.5px solid var(--cream3); border-radius: var(--radius-sm); font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 500; color: var(--ink); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.2s; }
+    .btn-google:hover { background: var(--cream2); }
+    .auth-status { margin-top: 10px; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 12px; display: none; }
+    .auth-status.ok  { display: block; background: var(--success-bg); color: var(--success); border: 1px solid #b6e8cc; }
+    .auth-status.err { display: block; background: var(--danger-bg);  color: var(--danger);  border: 1px solid #f5c0c0; }
+
+    /* FORM */
+    .form-body { padding: 18px; }
+    .field { margin-bottom: 15px; }
+    .field label { display: block; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 6px; }
+    .field label .req { color: var(--gold); }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 11px 14px; background: var(--white); border: 1px solid var(--cream3);
+      border-radius: var(--radius-sm); font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 300;
+      color: var(--ink); transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none; appearance: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,150,90,0.12); }
+    .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    .field textarea { resize: none; height: 80px; line-height: 1.6; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .divider { border: none; border-top: 1px solid var(--cream3); margin: 18px 0; }
+    .section-heading { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 12px; }
+
+    /* RGPD */
+    .rgpd-box { background: var(--white); border: 1px solid var(--cream3); border-left: 3px solid var(--gold); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 20px; }
+    .rgpd-box p { font-size: 11.5px; line-height: 1.75; color: var(--ink-mid); font-weight: 300; }
+
+    /* FIRMA */
+    .sig-outer { background: var(--white); border: 1px solid var(--cream3); border-radius: var(--radius); overflow: hidden; margin-bottom: 8px; position: relative; }
+    .sig-topbar { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; border-bottom: 1px solid var(--cream2); }
+    .sig-topbar span { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-light); }
+    .btn-clear { font-size: 11px; color: var(--danger); background: var(--danger-bg); border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-family: 'Jost', sans-serif; }
+    #sigCanvas { display: block; width: 100%; height: 160px; cursor: crosshair; touch-action: none; }
+    .sig-hint { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; transition: opacity 0.3s; }
+    .sig-hint svg { display: block; margin: 0 auto 6px; }
+    .sig-hint p { font-size: 12px; color: var(--ink-light); font-weight: 300; }
+    .sig-note { font-size: 11px; color: var(--ink-light); margin-bottom: 20px; display: flex; align-items: flex-start; gap: 5px; line-height: 1.5; }
+
+    /* BOTÓN */
+    #msgBox { padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.5; display: none; margin-bottom: 14px; }
+    #msgBox.ok      { display: block; background: var(--success-bg); color: var(--success); border: 1px solid #b6e8cc; }
+    #msgBox.err     { display: block; background: var(--danger-bg);  color: var(--danger);  border: 1px solid #f5c0c0; }
+    #msgBox.loading { display: block; background: #fffbf0; color: #7a5a1a; border: 1px solid #f0d898; }
+    .btn-submit { width: 100%; padding: 15px; background: var(--ink); color: var(--white); border: none; border-radius: var(--radius-sm); font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, opacity 0.2s; margin-bottom: 10px; }
+    .btn-submit:hover { background: #2c2c2c; }
+    .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .footer { text-align: center; padding: 14px 20px 28px; font-size: 10px; color: var(--ink-light); letter-spacing: 0.06em; border-top: 1px solid var(--cream3); margin-top: 8px; }
+
+    /* TOAST */
+    #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(70px); background: var(--ink); color: #fff; padding: 10px 22px; border-radius: 100px; font-size: 12px; letter-spacing: 0.04em; transition: transform 0.3s; z-index: 999; white-space: nowrap; pointer-events: none; }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* INSTALL */
+    #installBanner { display: none; margin: 10px 18px 0; background: #fff; border: 1px solid var(--cream3); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; color: var(--ink-mid); align-items: center; gap: 10px; }
+    #installBanner.show { display: flex; }
+    #installBanner button { margin-left: auto; padding: 6px 14px; background: var(--ink); color: #fff; border: none; border-radius: 4px; font-size: 11px; font-family: 'Jost', sans-serif; cursor: pointer; white-space: nowrap; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ENCABEZADO -->
+  <div class="header">
+    <div class="header-logo">
+      <div class="logo-placeholder" id="logoFallback">
+        Niche Beauty Lab
+      </div>
+      <img id="logoImg" src="logo.png" alt="Niche Beauty Lab"
+           style="display:none"
+           onload="this.style.display='block';document.getElementById('logoFallback').style.display='none';"
+           onerror="this.style.display='none';" />
+    </div>
+    <div class="header-address">
+      <!-- ✏ Edita aquí la dirección de tu empresa -->
+      Carrer Germans Bassas 2, 08360 Canet de Mar<br />
+      question@nichebeautylab.com · +34 872 235 125
+    </div>
+  </div>
+
+  <!-- TÍTULO -->
+  <div class="form-title-bar">
+    <h1>Registro Individual de Visita</h1>
+  </div>
+
+  <!-- INSTALL BANNER -->
+  <div id="installBanner">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v13m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+    Instalar como app en este dispositivo
+    <button onclick="installPWA()">Instalar</button>
+  </div>
+
+  <!-- AUTH GOOGLE -->
+  <div class="auth-wrap">
+    <div class="auth-card" id="authCard">
+      <div class="auth-icon">
+        <!-- Google color icon -->
+        <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5.1l-6.2-5.2C29.4 35.5 26.8 36 24 36c-5.2 0-9.6-2.9-11.2-7.1l-6.5 5C9.5 39.5 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l6.2 5.2C41.1 35.4 44 30.1 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
+      </div>
+      <div class="auth-text">
+        <strong>Conectar con Google</strong>
+        <p>Los registros se guardarán en Google Sheets (Drive)</p>
+      </div>
+      <button class="btn-google" onclick="signInGoogle()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Entrar
+      </button>
+    </div>
+    <div class="auth-status" id="authStatus"></div>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div class="form-body">
+    <div class="field-row">
+      <div class="field">
+        <label>Fecha <span class="req">*</span></label>
+        <input type="date" id="fecha" required />
+      </div>
+      <div class="field">
+        <label>Hora entrada <span class="req">*</span></label>
+        <input type="time" id="horaEntrada" required />
+      </div>
+    </div>
+    <div class="field">
+      <label>Hora de salida (aprox.)</label>
+      <input type="time" id="horaSalida" />
+    </div>
+
+    <hr class="divider" />
+
+    <div class="field">
+      <label>Nombre y apellidos <span class="req">*</span></label>
+      <input type="text" id="nombre" placeholder="Nombre completo del visitante" autocomplete="name" required />
+    </div>
+    <div class="field">
+      <label>Departamento que visita <span class="req">*</span></label>
+      <select id="departamento" required>
+        <option value="">Seleccionar departamento...</option>
+        <option>Dirección General</option>
+        <option>Administración y Finanzas</option>
+        <option>Recursos Humanos</option>
+        <option>Marketing y Comunicación</option>
+        <option>Comercial y Ventas</option>
+        <option>I+D / Laboratorio</option>
+        <option>Logística y Almacén</option>
+        <option>Tecnología y Sistemas</option>
+        <option>Otro</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Motivo de la visita <span class="req">*</span></label>
+      <textarea id="motivo" placeholder="Describa brevemente el motivo de su visita..." required></textarea>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- RGPD -->
+    <div class="section-heading">Información y confidencialidad</div>
+    <div class="rgpd-box">
+      <p>En cumplimiento de la normativa vigente en materia de protección de datos, le informamos que los datos facilitados serán tratados por <strong>NICHE BEAUTY LAB</strong> con la finalidad de gestionar el control de acceso a las instalaciones y garantizar la seguridad. Los datos no se comunicarán a terceros salvo obligación legal y se conservarán durante el tiempo necesario.</p>
+      <br/>
+      <p>Se establece que toda información de la empresa a la que los visitantes tengan acceso, ya sea mediante observación o escucha, deberá mantenerse estrictamente confidencial.</p>
+    </div>
+
+    <!-- FIRMA -->
+    <div class="section-heading">Firma del visitante</div>
+    <div class="sig-outer">
+      <div class="sig-topbar">
+        <span>Firme con el dedo</span>
+        <button class="btn-clear" onclick="clearSig()">✕ Borrar</button>
+      </div>
+      <canvas id="sigCanvas" width="960" height="320"></canvas>
+      <div class="sig-hint" id="sigHint">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c8bfb0" stroke-width="1.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        <p>Toca aquí para firmar</p>
+      </div>
+    </div>
+    <div class="sig-note">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      La firma queda vinculada al registro y se guarda como imagen en Google Drive junto con los datos del formulario.
+    </div>
+
+    <div id="msgBox"></div>
+    <button class="btn-submit" id="btnEnviar" onclick="enviar()">Registrar visita</button>
+  </div>
+
+  <div class="footer">NICHE BEAUTY LAB · Registro de visitas · Datos protegidos RGPD</div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   CONFIGURACIÓN GOOGLE
+   ─────────────────────────────────────────────────────────
+   Sigue las instrucciones del archivo SETUP_GOOGLE.md
+   para obtener CLIENT_ID y SHEET_ID y pégalos aquí.
+   ════════════════════════════════════════════════════════ */
+const GOOGLE_CLIENT_ID = '802545718180-5lfd3c03ge24fnkcdu4obov5q4ifet07.apps.googleusercontent.com';
+const SHEET_ID         = '1KDPisLwGYDHCDVvKzO_-Jm59-0Gi2902vAUspxjTvwo';        // ID de tu Google Sheet
+const SHEET_NAME       = 'Registros';               // Nombre de la hoja
+const DRIVE_FOLDER     = 'Firmas_NicheBeautyLab';   // Carpeta en Drive para firmas
+
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+
+let accessToken = null;
+let tokenClient = null;
+
+/* ── INIT Google Identity ── */
+window.addEventListener('load', () => {
+  if (typeof google === 'undefined') return;
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: SCOPES,
+    callback: (resp) => {
+      if (resp.error) { showAuthStatus('err', '✗ Error de autenticación: ' + resp.error); return; }
+      accessToken = resp.access_token;
+      document.getElementById('authCard').classList.add('hidden');
+      showAuthStatus('ok', '✓ Conectado con Google. Los registros se guardarán en Google Sheets.');
+    }
+  });
+});
+
+function signInGoogle() {
+  if (!tokenClient) { showAuthStatus('err', '✗ Google no cargó correctamente. Recarga la página.'); return; }
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+/* ── FIRMA ── */
+const canvas = document.getElementById('sigCanvas');
+const ctx    = canvas.getContext('2d');
+const hint   = document.getElementById('sigHint');
+let drawing = false, hasSig = false, lx = 0, ly = 0;
+
+function pos(e) {
+  const r = canvas.getBoundingClientRect();
+  const sx = canvas.width / r.width, sy = canvas.height / r.height;
+  const src = e.touches ? e.touches[0] : e;
+  return [(src.clientX - r.left) * sx, (src.clientY - r.top) * sy];
+}
+canvas.addEventListener('mousedown',  e => { drawing=true; [lx,ly]=pos(e); });
+canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; [lx,ly]=pos(e); }, {passive:false});
+canvas.addEventListener('mousemove',  e => doDraw(e));
+canvas.addEventListener('touchmove',  e => { e.preventDefault(); doDraw(e); }, {passive:false});
+canvas.addEventListener('mouseup',    () => drawing=false);
+canvas.addEventListener('touchend',   e => { e.preventDefault(); drawing=false; }, {passive:false});
+
+function doDraw(e) {
+  if (!drawing) return;
+  const [x,y] = pos(e);
+  ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y);
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=2.8; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.stroke(); lx=x; ly=y;
+  if (!hasSig) { hasSig=true; hint.style.opacity='0'; }
+}
+function clearSig() { ctx.clearRect(0,0,canvas.width,canvas.height); hasSig=false; hint.style.opacity='1'; }
+
+/* ── ENVIAR ── */
+async function enviar() {
+  const fecha       = document.getElementById('fecha').value;
+  const horaEntrada = document.getElementById('horaEntrada').value;
+  const horaSalida  = document.getElementById('horaSalida').value;
+  const nombre      = document.getElementById('nombre').value.trim();
+  const depto       = document.getElementById('departamento').value;
+  const motivo      = document.getElementById('motivo').value.trim();
+
+  if (!fecha || !horaEntrada || !nombre || !depto || !motivo) {
+    showMsg('err', '⚠ Completa todos los campos obligatorios marcados con *.'); return;
+  }
+  if (!hasSig) {
+    showMsg('err', '⚠ Es necesario firmar el documento antes de registrar la visita.'); return;
+  }
+  if (!accessToken) {
+    showMsg('err', '⚠ Conecta con Google primero para poder guardar el registro.'); return;
+  }
+
+  const btnEnviar = document.getElementById('btnEnviar');
+  btnEnviar.disabled = true;
+  showMsg('loading', '⏳ Guardando registro en Google Sheets...');
+
+  try {
+    const ts = new Date().toLocaleString('es-ES');
+
+    // 1. Subir firma a Google Drive y obtener URL
+    showMsg('loading', '⏳ Subiendo firma a Google Drive...');
+    const firmaUrl = await subirFirmaADrive(nombre, fecha);
+
+    // 2. Añadir fila a Google Sheets
+    showMsg('loading', '⏳ Guardando datos en la hoja de cálculo...');
+    const fila = [[fecha, horaEntrada, horaSalida || '—', nombre, depto, motivo, ts, firmaUrl]];
+    await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}!A:H:append?valueInputOption=USER_ENTERED`,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ values: fila })
+      }
+    );
+
+    showMsg('ok', '✓ Visita registrada correctamente en Google Sheets. ¡Gracias!');
+    showToast('✓ Registro guardado');
+    setTimeout(() => resetForm(), 3000);
+
+  } catch(e) {
+    showMsg('err', '✗ Error al guardar: ' + e.message);
+    btnEnviar.disabled = false;
+  }
+}
+
+async function subirFirmaADrive(nombre, fecha) {
+  // Buscar o crear carpeta en Drive
+  const folderSearch = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FOLDER}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+    { headers: { Authorization: 'Bearer ' + accessToken } }
+  ).then(r => r.json());
+
+  let folderId;
+  if (folderSearch.files && folderSearch.files.length > 0) {
+    folderId = folderSearch.files[0].id;
+  } else {
+    const folder = await fetch('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: DRIVE_FOLDER, mimeType: 'application/vnd.google-apps.folder' })
+    }).then(r => r.json());
+    folderId = folder.id;
+  }
+
+  // Subir imagen PNG de la firma
+  const blob = dataURLToBlob(canvas.toDataURL('image/png'));
+  const filename = `firma_${nombre.replace(/\s+/g,'_')}_${fecha}.png`;
+  const metadata = JSON.stringify({ name: filename, parents: [folderId] });
+  const form = new FormData();
+  form.append('metadata', new Blob([metadata], {type:'application/json'}));
+  form.append('file', blob);
+
+  const file = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + accessToken },
+    body: form
+  }).then(r => r.json());
+
+  return file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
+}
+
+function dataURLToBlob(dataURL) {
+  const [header, data] = dataURL.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+  const bin  = atob(data);
+  const buf  = new Uint8Array(bin.length);
+  for (let i=0; i<bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return new Blob([buf], {type: mime});
+}
+
+/* ── RESET ── */
+function resetForm() {
+  ['nombre','motivo','horaSalida'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('departamento').value = '';
+  clearSig();
+  document.getElementById('btnEnviar').disabled = false;
+  showMsg('','');
+  setDefaults();
+}
+
+function setDefaults() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('fecha').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  document.getElementById('horaEntrada').value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+}
+
+/* ── UI ── */
+function showMsg(type, text) {
+  const el = document.getElementById('msgBox');
+  el.className = type || ''; el.textContent = text;
+  el.style.display = type ? 'block' : 'none';
+}
+function showAuthStatus(type, msg) {
+  const el = document.getElementById('authStatus');
+  el.className = 'auth-status ' + type; el.textContent = msg;
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ── PWA ── */
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
+function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => { deferredPrompt=null; document.getElementById('installBanner').classList.remove('show'); });
+}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+setDefaults();
+</script>
+</body>
+</html>
